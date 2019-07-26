@@ -282,10 +282,10 @@ if __name__ == '__main__':
                                                                                 answer_sememes: batch_test['al']})
                     map_score = utils.cal_map_one(batch_test['al'], rank_res[1])
                     maps_test.append(map_score)
-                    _, test_predict = hamming_loss(batch_test['al'], rank_res[1], get_answer=True, predict_num=hownet.sem_num)
+                    _, test_predict = utils.hamming_loss(batch_test['al'], rank_res[1], get_answer=True, predict_num=hownet.sem_num)
                     loss_test += loss_i
                     if len(test_predict) != 0:
-                        test_predict_str = predictlabel2char(hownet.id2sememe, test_predict)
+                        test_predict_str = utils.predictlabel2char(hownet.id2sememe, test_predict)
                         with open(example_writer_filename, 'a', encoding='utf-8') as ex:
                             ex.write(test_tup[4] + '\n\t')
                             for s in test_predict_str['truth']:

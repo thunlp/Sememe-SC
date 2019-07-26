@@ -22,7 +22,7 @@ if __name__ == '__main__':
     k = 100
     trunc_num = 5
     # initial_seed = 2018
-    os.environ['CUDA_VISIBLE_DEVICES'] = '7'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '5'
 
     hownet_filename = 'dataset/hownet.txt'
     comp_filename = 'dataset/all.bin'
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     dev_filename = 'dataset/dev.bin'
     embedding_filename = 'dataset/word_embedding.txt'
     sem_embed_filename = 'dataset/sememe_vector.txt'
-    logdir_name = 'sememe_prediction/SCAS_R'
+    logdir_name = 'sememe_prediction/SCMSA_R1semnonorm'
 
     # load hownet，并把hownet.comp分成test_set和train_set
     hownet = utils.Hownet(hownet_file=hownet_filename, comp_file=comp_filename)
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     hownet.token2id()
     hownet.load_split_dataset(train_filename=train_filename, test_filename=test_filename, dev_filename=dev_filename)
     word_embedding_np, hownet = utils.load_word_embedding(embedding_filename, hownet, scale=True)  # load word embedding
-    sememe_embedding_np = utils.load_sememe_embedding(sem_embed_filename, hownet, scale=True)  # load sememe embedding
+    sememe_embedding_np = utils.load_sememe_embedding(sem_embed_filename, hownet, scale=False)  # load sememe embedding
     train_num = len(hownet.comp_train)
     pos_dict, word_remove = utils.load_hownet_pos()
     hownet, cls_dict = utils.divide_data_with_pos(pos_dict, hownet)
@@ -68,7 +68,9 @@ if __name__ == '__main__':
         os.makedirs(os.path.join(logdir_name, 'model_file'))
         os.makedirs(os.path.join(logdir_name, 'tensorboard_logs'))
         os.makedirs(os.path.join(logdir_name, 'example_files'))
+    # ################ Prepare Data ###################
 
+    # ################ Model and Run ###################
     input_word_l = tf.placeholder(tf.int32, shape=[1], name='word_left')
     input_word_r = tf.placeholder(tf.int32, shape=[1], name='word_right')
     input_pos = tf.placeholder(tf.int32, shape=[1], name='pos_tag')
@@ -88,7 +90,6 @@ if __name__ == '__main__':
 
     W_a = tf.Variable(tf.truncated_normal([dim, dim], stddev=0.5), tf.float32, name='W_a')
     b_a = tf.Variable(tf.zeros([1, dim]), tf.float32, name='b_a')
-
     U = tf.Variable(tf.truncated_normal([4, 2 * dim, trunc_num], stddev=0.5), tf.float32, name='U')
     V = tf.Variable(tf.truncated_normal([4, dim, trunc_num], stddev=0.5), tf.float32, name='V')
     U_i = tf.reshape(tf.nn.embedding_lookup(U, input_pos), [2 * dim, trunc_num])
@@ -126,7 +127,7 @@ if __name__ == '__main__':
     with tf.name_scope('phrase_embedding'):
         embed_word_whole = embed_word_r + embed_word_l
         embed_sememe_whole = embed_aggre_word_r_pure + embed_aggre_word_l_pure
-        phrase_vec = tf.nn.tanh(tf.matmul(tf.concat([embed_word_whole, embed_sememe_whole], 1), W_c_i)+b_c, name="phrase_vec")
+        phrase_vec = tf.nn.tanh(tf.matmul(tf.concat([embed_word_whole, embed_sememe_whole], 1), W_c_i+W_c_base)+b_c, name="phrase_vec")
     with tf.name_scope('output_layer'):
         y_hat = tf.matmul(phrase_vec, tf.transpose(sememe_embedding))
     with tf.name_scope('cross_entropy_loss'):
@@ -161,7 +162,7 @@ if __name__ == '__main__':
         last_last_map = 10
         now_map = 100
         jump2test = False
-
+        random.seed(2018)
         random.shuffle(hownet.comp_train)
         for epoch in range(total_epoch):
             example_writer_filename = logdir_name + '/example_files/epoch' + str(epoch + 1) + '.txt'  # file for writing examples
@@ -312,10 +313,10 @@ if __name__ == '__main__':
                     map_score = utils.cal_map_one(batch_test['al'], rank_res[1])
                     maps_test.append(map_score)
                     maps_test_class[test_tup[6]].append(map_score)
-                    _, test_predict = hamming_loss(batch_test['al'], rank_res[1], get_answer=True, predict_num=hownet.sem_num)
+                    _, test_predict = utils.hamming_loss(batch_test['al'], rank_res[1], get_answer=True, predict_num=hownet.sem_num)
                     loss_test += loss_i
                     if len(test_predict) != 0:
-                        test_predict_str = predictlabel2char(hownet.id2sememe, test_predict)
+                        test_predict_str = utils.predictlabel2char(hownet.id2sememe, test_predict)
                         with open(example_writer_filename, 'a', encoding='utf-8') as ex:
                             ex.write(test_tup[4] + '\n\t')
                             for s in test_predict_str['truth']:

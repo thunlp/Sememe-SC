@@ -23,7 +23,7 @@ if __name__ == '__main__':
     k = 100
     trunc_num = 5
     # init_ial_seed = 2018
-    os.environ['CUDA_VISIBLE_DEVICES'] = '6'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '4'
 
     hownet_filename = 'dataset/hownet.txt'
     comp_filename = 'dataset/all.bin'
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     dev_filename = 'dataset/dev.bin'
     embedding_filename = 'dataset/word_embedding.txt'
     sem_embed_filename = 'dataset/sememe_vector.txt'
-    logdir_name = 'sememe_prediction/SCAS_R'
+    logdir_name = 'sememe_prediction/SCAS_R1semnonorm'
 
     # load hownet，并把hownet.comp分成test_set和train_set
     hownet = utils.Hownet(hownet_file=hownet_filename, comp_file=comp_filename)
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     hownet.token2id()
     hownet.load_split_dataset(train_filename=train_filename, test_filename=test_filename, dev_filename=dev_filename)
     word_embedding_np, hownet = utils.load_word_embedding(embedding_filename, hownet, scale=True)  # load word embedding
-    sememe_embedding_np = utils.load_sememe_embedding(sem_embed_filename, hownet, scale=True)  # load sememe embedding
+    sememe_embedding_np = utils.load_sememe_embedding(sem_embed_filename, hownet, scale=False)  # load sememe embedding
     train_num = len(hownet.comp_train)
     pos_dict, word_remove = utils.load_hownet_pos()
     hownet, cls_dict = utils.divide_data_with_pos(pos_dict, hownet)
@@ -296,10 +296,10 @@ if __name__ == '__main__':
                     map_score = utils.cal_map_one(batch_test['al'], rank_res[1])
                     maps_test.append(map_score)
                     maps_test_class[test_tup[6]].append(map_score)
-                    _, test_predict = hamming_loss(batch_test['al'], rank_res[1], get_answer=True, predict_num=hownet.sem_num)
+                    _, test_predict = utils.hamming_loss(batch_test['al'], rank_res[1], get_answer=True, predict_num=hownet.sem_num)
                     loss_test += loss_i
                     if len(test_predict) != 0:
-                        test_predict_str = predictlabel2char(hownet.id2sememe, test_predict)
+                        test_predict_str = utils.predictlabel2char(hownet.id2sememe, test_predict)
                         with open(example_writer_filename, 'a', encoding='utf-8') as ex:
                             ex.write(test_tup[4] + '\n\t')
                             for s in test_predict_str['truth']:
