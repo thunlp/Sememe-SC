@@ -1,10 +1,8 @@
-## Modeling Semantic Compositionality with Sememe Knowledge
+### Modeling Semantic Compositionality with Sememe Knowledge
 
-Code and data for ACL2019 paper 
+Code and data for ACL2019 paper Modeling Semantic Compositionality with Sememe Knowledge https://arxiv.org/pdf/1907.04744.pdf 
 
-[Modeling Semantic Compositionality with Sememe Knowledge]: https://arxiv.org/pdf/1907.04744.pdf
-
-#### Requirements:
+### Requirements
 
 - Tensorflow >= 1.13.1
 - Python3.6
@@ -20,13 +18,13 @@ This repo contains three types of data.
     The format for each instance is as follows:
 
     ```
-    农民                            ==>{constituent_word_1}
-    职位 人 农						 ==>{sememe_set_of_constituent_word_1}
-    起义							  ==>{constituent_word_2}
-    暴动 事情 政						==>{sememe_set_of_constituent_word_2}
-    农民起义						 ==>{MWE}
-    事情 职位 政 暴动 人 农			  ==>{sememe_set_of_MWE}
-    3.0							    ==>{SCD_of_the_MWE}
+    农民                           ==>{constituent_word_1}
+    职位 人 农                      ==>{sememe_set_of_constituent_word_1}
+    起义                           ==>{constituent_word_2}
+    暴动 事情 政                    ==>{sememe_set_of_constituent_word_2}
+    农民起义                        ==>{MWE}
+    事情 职位 政 暴动 人 农          ==>{sememe_set_of_MWE}
+    3.0                           ==>{SCD_of_the_MWE}
     ```
 
 - Core data for our model
@@ -43,11 +41,7 @@ This repo contains three types of data.
 
   - `./dataset/all.bin` All data. Use `pickle` to load.
 
-  - `./dataset/sememe_vector.txt` Pretrained 1335 sememe embeddings, original file download 
-
-    [here]: https://cloud.tsinghua.edu.cn/d/76ab4a71efa541bd8eb3/
-
-    .
+  - `./dataset/sememe_vector.txt` Pretrained 1335 sememe embeddings, original file download here https://cloud.tsinghua.edu.cn/d/76ab4a71efa541bd8eb3/. 
 
   - `./dataset/word_embedding.txt.zip` Pretrained 200d GloVe embedding. Unzip it before use.
 
@@ -56,7 +50,7 @@ This repo contains three types of data.
   - `./wordsim/filtered_wordsim240.txt   `
   - `./wordsim/COS960.txt   `
 
-#### Sememe-based Semantic Compositionality Degree
+Sememe-based Semantic Compositionality Degree
 
 To compare the correlation between human annotated SCD and our proposed sememe-based SCD, please:
 
@@ -65,7 +59,7 @@ cd 'SC Degree'
 python test_scd.py
 ```
 
-#### MWE Similarity Computation
+### MWE Similarity Computation
 
 We use Wordsim240, Wordsim297 and COS960 to test our models performance on MWE similarity computation task. We remove the words in above three dataset which are not MWEs in our dataset and manually move the MWEs in above three dataset to test set.
 
@@ -101,7 +95,7 @@ To evaluate the learned MWE embeddings, please:
 python eval_wordsim.py {saved_MWE_embedding_path} 
 ```
 
-#### MWE Sememe Prediction
+### MWE Sememe Prediction
 
 To train and test our models on MWE sememe prediction task, you could run the following commands:
 
@@ -129,7 +123,7 @@ SC-MSA+R
 python sem_SC_MSA_R.py 
 ```
 
-#### Cite
+### Cite
 
 If you use the code or data, please cite this paper:
 
