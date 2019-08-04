@@ -16,14 +16,9 @@ if __name__ == '__main__':
     dim = 200                                   # dimension of embedding
     lr_decay_rate = 0.99                        # learning rate decay rate
     batch_size = 1                              # batch size, set to 1 because we use SGD
-    # learning_rate = float(sys.argv[1])          # initial learning rate  0.2
-    # total_epoch = int(sys.argv[3])              # total training epoches  40
-    learning_rate = 0.2          # initial learning rate  0.2
-    total_epoch = 40             # total training epoches  40
+    learning_rate = 0.2                         # initial learning rate  0.2
+    total_epoch = 40                            # total training epoches  40
     k = 100
-    trunc_num = 5
-    # init_ial_seed = 2018
-    os.environ['CUDA_VISIBLE_DEVICES'] = '4'
 
     hownet_filename = 'dataset/hownet.txt'
     comp_filename = 'dataset/all.bin'
@@ -32,7 +27,7 @@ if __name__ == '__main__':
     dev_filename = 'dataset/dev.bin'
     embedding_filename = 'dataset/word_embedding.txt'
     sem_embed_filename = 'dataset/sememe_vector.txt'
-    logdir_name = 'sememe_prediction/SCAS_R1semnonorm'
+    logdir_name = 'sememe_prediction/SCAS_R'
 
     # load hownet，并把hownet.comp分成test_set和train_set
     hownet = utils.Hownet(hownet_file=hownet_filename, comp_file=comp_filename)
@@ -40,21 +35,13 @@ if __name__ == '__main__':
     hownet.token2id()
     hownet.load_split_dataset(train_filename=train_filename, test_filename=test_filename, dev_filename=dev_filename)
     word_embedding_np, hownet = utils.load_word_embedding(embedding_filename, hownet, scale=True)  # load word embedding
-    sememe_embedding_np = utils.load_sememe_embedding(sem_embed_filename, hownet, scale=False)  # load sememe embedding
+    sememe_embedding_np = utils.load_sememe_embedding(sem_embed_filename, hownet, scale=True)  # load sememe embedding
     train_num = len(hownet.comp_train)
     pos_dict, word_remove = utils.load_hownet_pos()
     hownet, cls_dict = utils.divide_data_with_pos(pos_dict, hownet)
     print("number of dataset in training set:{}".format(len(hownet.comp_train)))
     print("number of dataset in test set:{}".format(len(hownet.comp_test)))
     print("number of dataset in dev set:{}".format(len(hownet.comp_dev)))
-
-
-    # dim = int(sys.arg v[1])
-    # initial_learning_rate  = float(sys.argv[2])
-    # lr_decay_rate = float(sys.argv[3])
-    # batch_size = int(sys.argv[4])
-    # # cpu_num = int(sys.argv[5])
-    # logdir_name = sys.argv[5]
 
     if not os.path.exists(logdir_name):
         os.makedirs(logdir_name)
@@ -82,21 +69,12 @@ if __name__ == '__main__':
     sememe_placeholder = tf.placeholder(tf.float32, [hownet.sem_num, dim])
     sememe_init = sememe_embedding.assign(sememe_placeholder)
 
-    U = tf.Variable(tf.truncated_normal([4, 2*dim, trunc_num], stddev=0.5), tf.float32, name='U')
-    V = tf.Variable(tf.truncated_normal([4, dim, trunc_num], stddev=0.5), tf.float32, name='V')
-    U_i = tf.reshape(tf.nn.embedding_lookup(U, input_pos), [2*dim, trunc_num])
-    V_i = tf.reshape(tf.nn.embedding_lookup(V, input_pos), [dim, trunc_num])
-    W_c_i = tf.matmul(U_i, V_i, transpose_b=True)
-    W_c_base = tf.Variable(tf.truncated_normal([2*dim, dim], stddev=1.0), tf.float32, name='W_c_base')
+    w_k_init_eye = tf.tile(tf.reshape(tf.eye(dim), [1,dim,dim]), [4,2,1])
+    w_k_init_gaussian = tf.reshape(tf.truncated_normal([8*dim,dim], stddev=0.1), [4, 2*dim, dim])
+    W_c = tf.Variable(w_k_init_eye+w_k_init_gaussian, tf.float32, name='W_c')
+    W_c_i = tf.reshape(tf.nn.embedding_lookup(W_c, input_pos), [2*dim, dim])
     b_c = tf.Variable(tf.zeros([1, dim]), tf.float32, name='b_c')
     global_step = tf.Variable(0, trainable=False)
-
-    # w_k_init_eye = tf.tile(tf.reshape(tf.eye(dim), [1,dim,dim]), [4,2,1])
-    # w_k_init_gaussian = tf.reshape(tf.truncated_normal([8*dim,dim], stddev=0.1), [4, 2*dim, dim])
-    # W_c = tf.Variable(w_k_init_eye+w_k_init_gaussian, tf.float32, name='W_c')
-    # W_c_i = tf.reshape(tf.nn.embedding_lookup(W_c, input_pos), [2*dim, dim])
-    # b_c = tf.Variable(tf.zeros([1, dim]), tf.float32, name='b_c')
-    # global_step = tf.Variable(0, trainable=False)
 
     with tf.name_scope('word_embedding'):
         embed_word_r = tf.nn.embedding_lookup(word_embedding, input_word_r)
@@ -111,7 +89,7 @@ if __name__ == '__main__':
         embed_aggre_word_r_pure = tf.reduce_sum(embed_sememe_r, axis=0, keepdims=True, name="embed_word_r")
         embed_word_whole = embed_word_r + embed_word_l
         embed_sememe_whole = embed_aggre_word_r_pure + embed_aggre_word_l_pure
-        phrase_vec = tf.nn.tanh(tf.matmul(tf.concat([embed_word_whole, embed_sememe_whole], 1), W_c_i+W_c_base)+b_c, name="phrase_vec")
+        phrase_vec = tf.nn.tanh(tf.matmul(tf.concat([embed_word_whole, embed_sememe_whole], 1), W_c_i)+b_c, name="phrase_vec")
     with tf.name_scope('output_layer'):
         y_hat = tf.matmul(phrase_vec, tf.transpose(sememe_embedding))
     with tf.name_scope('cross_entropy_loss'):

@@ -16,11 +16,10 @@ if __name__ == '__main__':
     dim = 200                                   # dimension of embedding
     lr_decay_rate = 0.99                        # learning rate decay rate
     batch_size = 1                              # batch size, set to 1 because we use SGD
-    learning_rate = 0.2          # initial learning rate  0.2
-    total_epoch = 40             # total training epoches  40
+    learning_rate = 0.2                         # initial learning rate  0.2
+    total_epoch = 40                            # total training epoches  40
     k = 100
-    # initial_seed = 2018
-    os.environ['CUDA_VISIBLE_DEVICES'] = '4'
+
     hownet_filename = 'dataset/hownet.txt'
     comp_filename = 'dataset/all.bin'
     train_filename = 'dataset/train.bin'
@@ -43,14 +42,6 @@ if __name__ == '__main__':
     print("number of dataset in training set:{}".format(len(hownet.comp_train)))
     print("number of dataset in test set:{}".format(len(hownet.comp_test)))
     print("number of dataset in dev set:{}".format(len(hownet.comp_dev)))
-
-    # # basic config
-    # dim = int(sys.arg v[1])
-    # learning_rate  = float(sys.argv[2])
-    # lr_decay_rate = float(sys.argv[3])
-    # batch_size = int(sys.argv[4])
-    # # cpu_num = int(sys.argv[5])
-    # logdir_name = sys.argv[5]
 
     if not os.path.exists(logdir_name):
         os.makedirs(logdir_name)
