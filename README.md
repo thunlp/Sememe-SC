@@ -1,7 +1,6 @@
 ### Modeling Semantic Compositionality with Sememe Knowledge
 
-Code and data for ACL2019 paper 
-[Modeling Semantic Compositionality with Sememe Knowledge](https://arxiv.org/pdf/1907.04744.pdf).
+Code and data for ACL2019 paper **Modeling Semantic Compositionality with Sememe Knowledge** [[pdf](https://www.aclweb.org/anthology/P19-1571)].
 ### Requirements
 
 - Tensorflow >= 1.13.1
