@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # labda = float(sys.argv[2])                  # regularization term labmda
     total_epoch = 50                            # total training epoches
     # total_epoch = int(sys.argv[3])              # total training epoches
-    trunc_num = 5
+    trunc_num = 5                               # dimention for decomposed sparse matrix
     # trunc_num = int(sys.argv[4])
     hownet_filename = 'dataset/hownet.txt'
     comp_filename = 'dataset/all.bin'

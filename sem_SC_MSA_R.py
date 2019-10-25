@@ -19,7 +19,7 @@ if __name__ == '__main__':
     batch_size = 1                              # batch size, set to 1 because we use SGD
     learning_rate = 0.2                         # initial learning rate  0.2
     total_epoch = 40                            # total training epoches  40
-    k = 100
+    k = 100                                     # parameter k for weighted_cross_entropy_with_logits
 
     hownet_filename = 'dataset/hownet.txt'
     comp_filename = 'dataset/all.bin'
