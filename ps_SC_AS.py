@@ -17,9 +17,9 @@ if __name__ == '__main__':
     dim = 200                                   # dimension of embedding
     lr_decay_rate = 0.99                        # learning rate decay rate
     batch_size = 1                              # batch size, set to 1 because we use SGD
-    learning_rate = float(sys.argv[1])          # initial learning rate
-    labda_c = float(sys.argv[2])                # regularization term labmda
-    total_epoch = int(sys.argv[3])              # total training epoches
+    learning_rate = 0.01                        # initial learning rate
+    labda = 0.0001                              # regularization term labmda
+    total_epoch = 50                            # total training epoches
     hownet_filename = 'dataset/hownet.txt'
     comp_filename = 'dataset/all.bin'
     train_filename = 'dataset/train.bin'

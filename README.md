@@ -1,4 +1,4 @@
-### Modeling Semantic Compositionality with Sememe Knowledge
+# Modeling Semantic Compositionality with Sememe Knowledge
 
 Code and data for ACL2019 paper **Modeling Semantic Compositionality with Sememe Knowledge** [[pdf](https://www.aclweb.org/anthology/P19-1571)].
 ### Requirements
@@ -6,7 +6,7 @@ Code and data for ACL2019 paper **Modeling Semantic Compositionality with Sememe
 - Tensorflow >= 1.13.1
 - Python3.6
 
-#### Data
+### Data
 
 This repo contains three types of data. 
 
@@ -43,6 +43,10 @@ This repo contains three types of data.
   - `./dataset/sememe_vector.txt` Pretrained 1335 sememe embeddings, original file download [here](https://cloud.tsinghua.edu.cn/d/76ab4a71efa541bd8eb3/).
 
   - `./dataset/word_embedding.txt.zip` Pretrained 200d GloVe embedding. Unzip it before use.
+
+    To load the `*.bin` file, you can first import `pickle` and then do as follows in Python:
+
+    `pickle.loads(open({file_name}, 'rb').read())`
 
 - Filtered word pairs with human annotated similarity data:
   - `./wordsim/filtered_wordsim240.txt   `
