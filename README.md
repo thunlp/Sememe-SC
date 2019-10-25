@@ -53,7 +53,7 @@ This repo contains three types of data.
   - `./wordsim/filtered_wordsim240.txt   `
   - `./wordsim/COS960.txt   `
 
-Sememe-based Semantic Compositionality Degree
+### Sememe-based Semantic Compositionality Degree
 
 To compare the correlation between human annotated SCD and our proposed sememe-based SCD, please:
 
