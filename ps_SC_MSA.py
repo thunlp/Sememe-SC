@@ -16,6 +16,8 @@ if __name__ == '__main__':
     # basic config
     dim = 200                                   # dimension of embedding
     lr_decay_rate = 0.99                        # learning rate decay rate
+    # Note that there is a mistake about lr_decay_rate, we correct it here.
+    # To achieve the reported results, actually we do not need to decay the learning rate.
     batch_size = 1                              # batch size, set to 1 because we use SGD
     learning_rate = 0.01                        # initial learning rate
     labda = 0.0001                              # regularization term labmda
